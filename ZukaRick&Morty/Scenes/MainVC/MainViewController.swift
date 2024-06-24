@@ -39,7 +39,7 @@ class MainViewController: UIViewController {
     }
     
     //MARK: - Random Location Action
-    @objc private func showRandomLocation() {
+    @objc func showRandomLocation() {
         fetchRandomLocation { [weak self] result in
             switch result {
             case .success(let location):

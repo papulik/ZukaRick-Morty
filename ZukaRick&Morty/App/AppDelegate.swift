@@ -24,6 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.makeKeyAndVisible()
         
         self.window = window
+
+        if let mainViewController = navigationController.viewControllers.first as? MainViewController {
+            mainViewController.showRandomLocation()
+        }
+
         return true
     }
 }
