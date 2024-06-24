@@ -16,7 +16,6 @@ class EpisodeDetailVM: ObservableObject {
 
     init(episode: Episode) {
         self.episode = episode
-        fetchCharacters()
     }
 
     func fetchCharacters() {
@@ -43,7 +42,9 @@ class EpisodeDetailVM: ObservableObject {
                     switch result {
                     case .success(let dictionary):
                         if let character = Character(from: dictionary) {
-                            self.characters.append(character)
+                            if !self.characters.contains(where: { $0.id == character.id }) {
+                                self.characters.append(character)
+                            }
                         }
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
@@ -58,6 +59,9 @@ class EpisodeDetailVM: ObservableObject {
                 self.isLoading = false
                 if self.errorMessage == nil && self.characters.isEmpty {
                     self.errorMessage = "No characters found"
+                } else {
+                    let ids = self.characters.map { $0.id }
+                    let uniqueIds = Set(ids)
                 }
             }
         }

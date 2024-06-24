@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Location: Equatable {
+struct Location: Equatable, Hashable, Identifiable {
     let id: Int
     let name: String
     let type: String
