@@ -11,7 +11,7 @@ class EpisodeDetailVM: ObservableObject {
     @Published var characters = [Character]()
     @Published var isLoading = false
     @Published var errorMessage: String?
-    
+
     let episode: Episode
 
     init(episode: Episode) {
@@ -19,14 +19,11 @@ class EpisodeDetailVM: ObservableObject {
     }
 
     func fetchCharacters() {
-        DispatchQueue.main.async {
-            self.isLoading = true
-            self.errorMessage = nil
-            self.characters = []
-        }
-        
         let dispatchGroup = DispatchGroup()
-        
+        isLoading = true
+        errorMessage = nil
+        var uniqueCharacters = Set<Character>()
+
         for urlString in episode.characters {
             dispatchGroup.enter()
             guard let url = URL(string: urlString) else {
@@ -36,41 +33,37 @@ class EpisodeDetailVM: ObservableObject {
                 dispatchGroup.leave()
                 continue
             }
-            
+
             NetworkingService.shared.fetchData(from: url) { (result: Result<[String: Any], Error>) in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let dictionary):
-                        if let character = Character(from: dictionary) {
-                            if !self.characters.contains(where: { $0.id == character.id }) {
-                                self.characters.append(character)
-                            }
+                switch result {
+                case .success(let dictionary):
+                    if let character = Character(from: dictionary) {
+                        DispatchQueue.main.async {
+                            uniqueCharacters.insert(character)
                         }
-                    case .failure(let error):
+                    }
+                case .failure(let error):
+                    DispatchQueue.main.async {
                         self.errorMessage = error.localizedDescription
                     }
-                    dispatchGroup.leave()
                 }
+                dispatchGroup.leave()
             }
         }
-        
+
         dispatchGroup.notify(queue: .main) {
-            DispatchQueue.main.async {
-                self.isLoading = false
-                if self.errorMessage == nil && self.characters.isEmpty {
-                    self.errorMessage = "No characters found"
-                } else {
-                    let ids = self.characters.map { $0.id }
-                    let uniqueIds = Set(ids)
-                }
+            self.isLoading = false
+            self.characters = Array(uniqueCharacters)
+            if self.errorMessage == nil && self.characters.isEmpty {
+                self.errorMessage = "No characters found"
             }
         }
     }
-    
+
     func deleteCharacter(at offsets: IndexSet) {
         characters.remove(atOffsets: offsets)
     }
-    
+
     func moveCharacter(from source: IndexSet, to destination: Int) {
         characters.move(fromOffsets: source, toOffset: destination)
     }
