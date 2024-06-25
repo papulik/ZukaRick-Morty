@@ -10,7 +10,7 @@ import SwiftUI
 struct CharacterDetailView: View {
     let character: Character
     @ObservedObject var viewModel = CharacterDetailVM()
-    var coordinator: AppCoordinator?
+    weak var coordinator: AppCoordinator?
 
     init(character: Character, coordinator: AppCoordinator?) {
         self.character = character

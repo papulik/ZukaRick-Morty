@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 class MainViewController: UIViewController {
-    var coordinator: AppCoordinator?
+    weak var coordinator: AppCoordinator?
     private var characters = [Character]()
     
     private let collectionView: UICollectionView = {

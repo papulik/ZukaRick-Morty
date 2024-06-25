@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EpisodeDetailView: View {
     @ObservedObject var viewModel: EpisodeDetailVM
-    var coordinator: AppCoordinator?
+    weak var coordinator: AppCoordinator?
 
     init(episode: Episode, coordinator: AppCoordinator?) {
         self.viewModel = EpisodeDetailVM(episode: episode)
